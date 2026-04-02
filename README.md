@@ -2,6 +2,8 @@
 
 Turn your album art + audio into a video, ready for YouTube, Facebook, or Instagram.
 
+![VideoRender](app_overview.png)
+
 ## Features
 
 - **Drag & drop** — drop your image/video + audio, click Create Video
