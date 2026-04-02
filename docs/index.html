@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VideoRender — Turn your art + audio into a video</title>
+  <link rel="icon" href="icon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #111;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+      background: linear-gradient(180deg, #1a1a1a 0%, #111 100%);
+    }
+
+    .hero img.logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ff4444;
+      text-shadow: 0 0 30px rgba(255, 68, 68, 0.3);
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #999;
+      margin-top: 10px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .download-btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 16px 40px;
+      background: #ff4444;
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #ff5555;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(255, 68, 68, 0.4);
+    }
+
+    .download-hint {
+      font-size: 13px;
+      color: #666;
+      margin-top: 10px;
+    }
+
+    .screenshot {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .screenshot img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #333;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .features {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .feature {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .feature h3 {
+      font-size: 16px;
+      color: #ff4444;
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      font-size: 14px;
+      color: #999;
+      line-height: 1.5;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 30px 20px;
+      border-top: 1px solid #222;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .footer a {
+      color: #ff4444;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 28px; }
+      .features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <img class="logo" src="icon.png" alt="VideoRender">
+    <h1>VideoRender</h1>
+    <p>Turn your album art + audio into a video, ready for YouTube, Facebook, or Instagram.</p>
+    <a class="download-btn" href="https://github.com/TxTony/Video-Render/releases/latest">Download for Windows</a>
+    <div class="download-hint">Free &middot; No account needed &middot; Auto-updates</div>
+  </div>
+
+  <div class="screenshot">
+    <img src="app_overview.png" alt="VideoRender screenshot">
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <h3>Drag & Drop</h3>
+      <p>Drop your image or video + your song. Click Create Video. That's it.</p>
+    </div>
+    <div class="feature">
+      <h3>Visual Styles</h3>
+      <p>Choose from Gritty, Clean, VHS Tape, Dark & Raw, Lo-Fi — or tweak manually with grain, contrast, and brightness.</p>
+    </div>
+    <div class="feature">
+      <h3>Title Overlay</h3>
+      <p>Add a logo or title PNG with transparent background. Position it anywhere, set fade in/out timing.</p>
+    </div>
+    <div class="feature">
+      <h3>Output Presets</h3>
+      <p>One click for YouTube, Facebook, Instagram, Best Quality, or Quick Share. Or go full manual.</p>
+    </div>
+    <div class="feature">
+      <h3>Auto Metadata</h3>
+      <p>Title, artist, album — auto-filled from your audio file. Edit if needed. Embedded in the video.</p>
+    </div>
+    <div class="feature">
+      <h3>Live Preview</h3>
+      <p>See your effects and overlay animation in real time before rendering. What you see is what you get.</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    Made by <a href="https://github.com/TxTony">TxTony</a> &middot;
+    <a href="https://github.com/TxTony/Video-Render">Source on GitHub</a>
+  </div>
+
+</body>
+</html>
