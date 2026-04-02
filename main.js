@@ -113,11 +113,11 @@ app.whenReady().then(() => {
   autoUpdater.autoInstallOnAppQuit = true;
 
   autoUpdater.on('update-available', () => {
-    mainWindow.webContents.send('update-status', 'Downloading update...');
+    sendToRenderer('update-status', 'Downloading update...');
   });
 
   autoUpdater.on('update-downloaded', () => {
-    mainWindow.webContents.send('update-status', 'Update ready — will install on restart');
+    sendToRenderer('update-status', 'Update ready — will install on restart');
   });
 
   autoUpdater.on('error', () => {
@@ -127,9 +127,31 @@ app.whenReady().then(() => {
   autoUpdater.checkForUpdatesAndNotify().catch(() => {});
 });
 
-app.on('window-all-closed', () => app.quit());
+app.on('window-all-closed', () => {
+  // Kill any running FFmpeg process on exit
+  if (currentRenderProc) {
+    currentRenderProc.kill();
+    currentRenderProc = null;
+  }
+  app.quit();
+});
 
-// Handle file dialog for output path
+let currentRenderProc = null;
+
+// Cancel running render
+ipcMain.handle('cancel-render', () => {
+  if (currentRenderProc) {
+    currentRenderProc.kill();
+    currentRenderProc = null;
+  }
+});
+
+function sendToRenderer(channel, data) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send(channel, data);
+  }
+}
+
 // Probe metadata from a file
 ipcMain.handle('probe-metadata', async (event, filePath) => {
   if (!filePath || !fs.existsSync(filePath)) return {};
@@ -334,20 +356,25 @@ ipcMain.handle('render', async (event, opts) => {
 
   return new Promise((resolve) => {
     const proc = spawn(ffmpeg, args);
+    currentRenderProc = proc;
     let stderr = '';
+    let cancelled = false;
 
     proc.stderr.on('data', (data) => {
-      stderr += data.toString();
-      // Parse progress from ffmpeg stderr
+      // Cap stderr to last 2000 chars to prevent memory bloat
+      stderr = (stderr + data.toString()).slice(-2000);
       const timeMatch = data.toString().match(/time=(\d{2}):(\d{2}):(\d{2}\.\d{2})/);
       if (timeMatch) {
         const seconds = parseInt(timeMatch[1]) * 3600 + parseInt(timeMatch[2]) * 60 + parseFloat(timeMatch[3]);
-        mainWindow.webContents.send('render-progress', { seconds });
+        sendToRenderer('render-progress', { seconds });
       }
     });
 
-    proc.on('close', (code) => {
-      if (code === 0) {
+    proc.on('close', (code, signal) => {
+      currentRenderProc = null;
+      if (signal === 'SIGTERM' || cancelled) {
+        resolve({ success: false, cancelled: true });
+      } else if (code === 0) {
         resolve({ success: true, output: outputPath });
       } else {
         resolve({ success: false, error: stderr.slice(-500) });
@@ -355,6 +382,7 @@ ipcMain.handle('render', async (event, opts) => {
     });
 
     proc.on('error', (err) => {
+      currentRenderProc = null;
       resolve({ success: false, error: `Failed to start FFmpeg: ${err.message}` });
     });
   });

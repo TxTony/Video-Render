@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('api', {
   probeMetadata: (filePath) => ipcRenderer.invoke('probe-metadata', filePath),
   onProgress: (callback) => ipcRenderer.on('render-progress', (_, data) => callback(data)),
   getFilePath: (file) => webUtils.getPathForFile(file),
+  cancelRender: () => ipcRenderer.invoke('cancel-render'),
   onUpdateStatus: (callback) => ipcRenderer.on('update-status', (_, msg) => callback(msg))
 });

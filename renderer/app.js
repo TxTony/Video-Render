@@ -5,6 +5,8 @@ let audioPath = null;
 let overlayPath = null;
 let customOverlayX = 50; // percent
 let customOverlayY = 50; // percent
+let visualBlobUrl = null;
+let overlayBlobUrl = null;
 
 // Presets: { grain, contrast, brightness }
 const PRESETS = {
@@ -369,7 +371,9 @@ setupDropZone(visualZone, visualInput, (file) => {
   visualType = isVideo ? 'video' : 'image';
   visualZone.classList.add('has-file');
 
+  if (visualBlobUrl) URL.revokeObjectURL(visualBlobUrl);
   const url = URL.createObjectURL(file);
+  visualBlobUrl = url;
 
   imagePreview.style.display = 'none';
   videoPreview.style.display = 'none';
@@ -435,7 +439,9 @@ setupDropZone(overlayZone, overlayInput, (file) => {
   overlayPath = window.api.getFilePath(file);
   overlayZone.classList.add('has-file');
 
+  if (overlayBlobUrl) URL.revokeObjectURL(overlayBlobUrl);
   const url = URL.createObjectURL(file);
+  overlayBlobUrl = url;
   overlayThumb.src = url;
   overlayThumb.style.display = 'block';
   overlayZone.querySelector('.drop-zone-icon').style.display = 'none';
@@ -449,6 +455,7 @@ setupDropZone(overlayZone, overlayInput, (file) => {
 });
 
 removeOverlay.addEventListener('click', () => {
+  if (overlayBlobUrl) { URL.revokeObjectURL(overlayBlobUrl); overlayBlobUrl = null; }
   overlayPath = null;
   previewOverlay.style.display = 'none';
   overlayControls.style.display = 'none';
@@ -665,13 +672,24 @@ function updateRecap() {
 }
 
 // --- Render ---
+let isRendering = false;
+
 renderBtn.addEventListener('click', async () => {
+  if (isRendering) return;
+  isRendering = true;
+  renderBtn.disabled = true;
+  renderBtn.textContent = 'Choose save location...';
+
   buildRecap();
   const outputPath = await window.api.pickOutput();
-  if (!outputPath) return;
+  if (!outputPath) {
+    isRendering = false;
+    renderBtn.textContent = 'Create Video';
+    updateRenderBtn();
+    return;
+  }
 
-  renderBtn.disabled = true;
-  renderBtn.textContent = 'Creating your video...';
+  renderBtn.textContent = 'Creating your video... (click to cancel)';
   progressArea.style.display = 'block';
   progressFill.style.width = '0%';
   progressText.textContent = 'Starting...';
@@ -683,55 +701,68 @@ renderBtn.addEventListener('click', async () => {
     progressFill.style.width = `${progress}%`;
   }, 200);
 
-  const res = await window.api.render({
-    visualPath,
-    visualType,
-    audioPath,
-    outputPath,
-    overlayPath: overlayPath || null,
-    overlayPosition: overlayPosition.value,
-    overlayCustomX: customOverlayX,
-    overlayCustomY: customOverlayY,
-    overlaySize: parseInt(overlaySize.value),
-    overlayOpacity: parseFloat(overlayOpacity.value),
-    overlayStart: parseFloat(overlayStart.value),
-    overlayDuration: parseFloat(overlayDuration.value),
-    overlayTransition: overlayTransition.value,
-    endPadding: parseFloat(endPadding.value),
-    resolution: resolution.value,
-    audioBitrate: audioBitrate.value,
-    videoBitrate: parseInt(videoBitrate.value),
-    crf: parseInt(crf.value),
-    grain: parseInt(grain.value),
-    contrast: parseFloat(contrast.value),
-    brightness: parseFloat(brightness.value),
-    metaTitle: metaTitle.value,
-    metaArtist: metaArtist.value,
-    metaAlbum: metaAlbum.value,
-    metaGenre: metaGenre.value,
-    metaDate: metaDate.value,
-    metaComment: metaComment.value
-  });
+  // Allow cancel by clicking the button during render
+  const cancelHandler = () => { window.api.cancelRender(); };
+  renderBtn.addEventListener('click', cancelHandler, { once: true });
 
-  clearInterval(pulse);
+  try {
+    const res = await window.api.render({
+      visualPath,
+      visualType,
+      audioPath,
+      outputPath,
+      overlayPath: overlayPath || null,
+      overlayPosition: overlayPosition.value,
+      overlayCustomX: customOverlayX,
+      overlayCustomY: customOverlayY,
+      overlaySize: parseInt(overlaySize.value),
+      overlayOpacity: parseFloat(overlayOpacity.value),
+      overlayStart: parseFloat(overlayStart.value),
+      overlayDuration: parseFloat(overlayDuration.value),
+      overlayTransition: overlayTransition.value,
+      endPadding: parseFloat(endPadding.value),
+      resolution: resolution.value,
+      audioBitrate: audioBitrate.value,
+      videoBitrate: parseInt(videoBitrate.value),
+      crf: parseInt(crf.value),
+      grain: parseInt(grain.value),
+      contrast: parseFloat(contrast.value),
+      brightness: parseFloat(brightness.value),
+      metaTitle: metaTitle.value,
+      metaArtist: metaArtist.value,
+      metaAlbum: metaAlbum.value,
+      metaGenre: metaGenre.value,
+      metaDate: metaDate.value,
+      metaComment: metaComment.value
+    });
 
-  if (res.success) {
-    progressFill.style.width = '100%';
-    progressText.textContent = 'Done!';
-    result.className = 'result success';
-    result.textContent = 'Your video is ready! Saved to:\n' + res.output;
-    result.style.display = 'block';
-  } else {
-    progressFill.style.width = '0%';
-    progressText.textContent = '';
-    result.className = 'result error';
-    result.textContent = friendlyError(res.error);
-    result.style.display = 'block';
+    if (res.success) {
+      progressFill.style.width = '100%';
+      progressText.textContent = 'Done!';
+      result.className = 'result success';
+      result.textContent = 'Your video is ready! Saved to:\n' + res.output;
+      result.style.display = 'block';
+    } else if (res.cancelled) {
+      progressFill.style.width = '0%';
+      progressText.textContent = 'Cancelled';
+      result.className = 'result error';
+      result.textContent = 'Render cancelled.';
+      result.style.display = 'block';
+    } else {
+      progressFill.style.width = '0%';
+      progressText.textContent = '';
+      result.className = 'result error';
+      result.textContent = friendlyError(res.error);
+      result.style.display = 'block';
+    }
+  } finally {
+    clearInterval(pulse);
+    renderBtn.removeEventListener('click', cancelHandler);
+    isRendering = false;
+    renderBtn.disabled = false;
+    renderBtn.textContent = 'Create Video';
+    updateRenderBtn();
   }
-
-  renderBtn.disabled = false;
-  renderBtn.textContent = 'Create Video';
-  updateRenderBtn();
 });
 
 // Progress updates from main process
