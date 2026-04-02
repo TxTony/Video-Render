@@ -1,6 +1,7 @@
 {
   "name": "videorender",
   "version": "1.0.0",
+  "author": "TxTony",
   "description": "Turn album art + audio into YouTube-ready videos",
   "main": "main.js",
   "scripts": {
