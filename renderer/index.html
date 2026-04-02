@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../favicon.png">
+  <title>VideoRender</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <h1>VIDEORENDER</h1>
+    <p class="subtitle">Create a video from your image and song</p>
+    <div class="update-bar" id="updateBar" style="display:none"></div>
+
+    <div class="layout">
+      <!-- LEFT COLUMN: Essential -->
+      <div class="col-main">
+
+        <!-- Step 1 & 2: Drop zones -->
+        <div class="drop-zones">
+          <div class="drop-zone" id="visualZone" data-accept="visual">
+            <div class="step-badge">Step 1</div>
+            <div class="drop-zone-icon">🖼️</div>
+            <div class="drop-zone-label">Drop your image or video here</div>
+            <div class="drop-zone-hint">or click to browse</div>
+            <img class="preview-img" id="imagePreview" style="display:none">
+            <video class="preview-video" id="videoPreview" muted loop style="display:none"></video>
+            <input type="file" id="visualInput" accept="image/*,video/*" hidden>
+          </div>
+
+          <div class="drop-zone" id="audioZone" data-accept="audio">
+            <div class="step-badge">Step 2</div>
+            <div class="drop-zone-icon">🎵</div>
+            <div class="drop-zone-label">Drop your song here</div>
+            <div class="drop-zone-hint">or click to browse</div>
+            <div class="audio-name" id="audioName" style="display:none"></div>
+            <input type="file" id="audioInput" accept="audio/*" hidden>
+          </div>
+        </div>
+
+        <!-- Guidance message -->
+        <div class="guidance" id="guidance">Start by dropping your image or video above</div>
+
+        <!-- Live Preview -->
+        <div class="preview-panel" id="previewPanel" style="display:none">
+          <h2>PREVIEW</h2>
+          <div class="preview-container" id="previewContainer">
+            <img id="previewImg" style="display:none">
+            <video id="previewVid" muted loop style="display:none"></video>
+            <img id="previewOverlay" class="preview-overlay" style="display:none">
+            <div class="grain-overlay" id="grainOverlay"></div>
+            <div class="preview-time-badge" id="previewTimeBadge" style="display:none">0.0s</div>
+          </div>
+          <div class="preview-playback" id="previewPlayback" style="display:none">
+            <button class="play-btn" id="previewPlayBtn" title="Preview overlay animation">&#9654; Preview animation</button>
+            <div class="preview-timeline">
+              <div class="preview-timeline-bar" id="previewTimelineBar">
+                <div class="preview-timeline-overlay" id="previewTimelineOverlay"></div>
+                <div class="preview-timeline-cursor" id="previewTimelineCursor"></div>
+              </div>
+              <span class="preview-time" id="previewTimeLabel">0s / 10s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output — Step 3 -->
+        <div class="output-profile">
+          <h2><span class="step-badge inline">Step 3</span> WHERE IS THIS VIDEO GOING?</h2>
+          <div class="profile-grid">
+            <button class="profile-btn active" data-profile="youtube">
+              <span class="profile-icon">&#9654;</span> YouTube
+            </button>
+            <button class="profile-btn" data-profile="facebook">
+              <span class="profile-icon">f</span> Facebook
+            </button>
+            <button class="profile-btn" data-profile="instagram">
+              <span class="profile-icon">&#9632;</span> Instagram
+            </button>
+            <button class="profile-btn" data-profile="full">
+              <span class="profile-icon">&#9733;</span> Best Quality
+            </button>
+            <button class="profile-btn" data-profile="small">
+              <span class="profile-icon">&#8595;</span> Quick Share
+            </button>
+            <button class="profile-btn" data-profile="custom-output">
+              <span class="profile-icon">&#9881;</span> Advanced
+            </button>
+          </div>
+          <div class="profile-info" id="profileInfo">Great quality, uploads fast on YouTube</div>
+          <div class="padding-setting">
+            <label>Extra time after song ends
+              <span class="slider-hint" id="paddingHint">2 seconds</span>
+            </label>
+            <input type="range" id="endPadding" min="0" max="10" value="2" step="0.5">
+            <div class="slider-labels"><span>none</span><span>10s</span></div>
+          </div>
+          <div class="settings-grid" id="outputSettings" style="display:none">
+            <div class="setting">
+              <label for="resolution">Resolution</label>
+              <select id="resolution">
+                <option value="3840x2160">4K (3840x2160)</option>
+                <option value="2560x1440">1440p (2560x1440)</option>
+                <option value="1920x1080" selected>1080p (1920x1080)</option>
+                <option value="1280x720">720p (1280x720)</option>
+                <option value="854x480">480p (854x480)</option>
+              </select>
+            </div>
+            <div class="setting">
+              <label for="audioBitrate">Audio quality</label>
+              <select id="audioBitrate">
+                <option value="96">Low (96 kbps)</option>
+                <option value="128">Normal (128 kbps)</option>
+                <option value="192" selected>High (192 kbps)</option>
+                <option value="256">Very high (256 kbps)</option>
+                <option value="320">Maximum (320 kbps)</option>
+              </select>
+            </div>
+            <div class="setting">
+              <label for="videoBitrate">Video quality mode</label>
+              <select id="videoBitrate">
+                <option value="0" selected>Automatic (recommended)</option>
+                <option value="2000">2 Mbps (small)</option>
+                <option value="4000">4 Mbps (medium)</option>
+                <option value="8000">8 Mbps (high)</option>
+                <option value="15000">15 Mbps (very high)</option>
+                <option value="30000">30 Mbps (huge)</option>
+                <option value="50000">50 Mbps (maximum)</option>
+              </select>
+            </div>
+            <div class="setting">
+              <label for="crf">Quality level <span id="crfVal">18</span></label>
+              <input type="range" id="crf" min="0" max="51" value="18">
+              <div class="slider-labels"><span>best (large file)</span><span>smallest file</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recap before render -->
+        <div class="recap-panel" id="recapPanel" style="display:none">
+          <h2>SUMMARY</h2>
+          <div class="recap-grid" id="recapGrid"></div>
+        </div>
+
+        <button id="renderBtn" class="render-btn" disabled>Create Video</button>
+
+        <div class="progress-area" id="progressArea" style="display:none">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text" id="progressText">Creating your video...</div>
+        </div>
+
+        <div class="result" id="result" style="display:none"></div>
+      </div>
+
+      <!-- RIGHT COLUMN: Optional -->
+      <div class="col-side">
+        <div class="side-label">Optional</div>
+
+        <!-- Title/logo overlay -->
+        <div class="side-section">
+          <h3>Title / Logo Overlay</h3>
+          <div class="drop-zone small" id="overlayZone">
+            <div class="drop-zone-icon">✨</div>
+            <div class="drop-zone-label">Drop your title image</div>
+            <div class="drop-zone-hint">PNG with transparent background</div>
+            <img class="preview-img" id="overlayThumb" style="display:none">
+            <input type="file" id="overlayInput" accept="image/png" hidden>
+          </div>
+          <div class="overlay-controls" id="overlayControls" style="display:none">
+            <div class="side-settings-grid">
+              <div class="setting">
+                <label>Position</label>
+                <select id="overlayPosition">
+                  <option value="custom" selected>Manual (drag on preview)</option>
+                  <option value="center">Center</option>
+                  <option value="top-left">Top Left</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </select>
+                <div class="custom-pos-info" id="customPosInfo" style="display:none">
+                  X: <span id="customXVal">0</span>% &nbsp; Y: <span id="customYVal">0</span>%
+                </div>
+              </div>
+              <div class="setting">
+                <label>Size <span id="overlaySizeVal">30</span>%</label>
+                <input type="range" id="overlaySize" min="5" max="100" value="30">
+              </div>
+              <div class="setting">
+                <label>Transparency <span id="overlayOpacityVal">100</span>%</label>
+                <input type="range" id="overlayOpacity" min="0.1" max="1.0" value="1.0" step="0.05">
+              </div>
+              <div class="setting">
+                <label>Appears at <span id="overlayStartVal">0</span>s</label>
+                <input type="range" id="overlayStart" min="0" max="30" value="0" step="0.5">
+              </div>
+              <div class="setting">
+                <label>Visible for <span id="overlayDurationVal">5</span>s</label>
+                <input type="range" id="overlayDuration" min="1" max="30" value="5" step="0.5">
+              </div>
+              <div class="setting">
+                <label>Animation</label>
+                <select id="overlayTransition">
+                  <option value="none">Instant</option>
+                  <option value="fade" selected>Fade in/out</option>
+                  <option value="fade-long">Slow fade in/out</option>
+                </select>
+              </div>
+            </div>
+            <button class="remove-btn" id="removeOverlay">Remove</button>
+          </div>
+        </div>
+
+        <!-- Style / Effects -->
+        <div class="side-section">
+          <h3>Visual Style</h3>
+          <div class="preset-grid">
+            <button class="preset-btn active" data-preset="grind" title="Slight grain and contrast boost">Gritty</button>
+            <button class="preset-btn" data-preset="clean" title="No effects, clean image">Clean</button>
+            <button class="preset-btn" data-preset="vhs" title="Heavy grain, washed out look">VHS Tape</button>
+            <button class="preset-btn" data-preset="blackmetal" title="Dark, noisy, crushed">Dark & Raw</button>
+            <button class="preset-btn" data-preset="lofi" title="Soft, slightly faded">Lo-Fi</button>
+            <button class="preset-btn" data-preset="custom" title="Set your own values below">Manual</button>
+          </div>
+          <div class="side-settings-grid" style="margin-top:12px">
+            <div class="setting">
+              <label for="grain">Film grain
+                <span class="slider-hint" id="grainHint">subtle</span>
+              </label>
+              <input type="range" id="grain" min="0" max="40" value="10">
+              <div class="slider-labels"><span>none</span><span>heavy</span></div>
+            </div>
+            <div class="setting">
+              <label for="contrast">Contrast
+                <span class="slider-hint" id="contrastHint">slightly boosted</span>
+              </label>
+              <input type="range" id="contrast" min="0.5" max="2.0" value="1.1" step="0.05">
+              <div class="slider-labels"><span>flat</span><span>intense</span></div>
+            </div>
+            <div class="setting">
+              <label for="brightness">Brightness
+                <span class="slider-hint" id="brightnessHint">normal</span>
+              </label>
+              <input type="range" id="brightness" min="-0.5" max="0.5" value="0.02" step="0.01">
+              <div class="slider-labels"><span>darker</span><span>brighter</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metadata -->
+        <div class="side-section">
+          <h3>Video Info</h3>
+          <div class="meta-hint">Auto-filled from your audio file if available.</div>
+          <div class="side-settings-grid">
+            <div class="setting">
+              <label for="metaTitle">Title</label>
+              <input type="text" id="metaTitle" placeholder="Song title">
+            </div>
+            <div class="setting">
+              <label for="metaArtist">Artist</label>
+              <input type="text" id="metaArtist" placeholder="Artist / band name">
+            </div>
+            <div class="setting">
+              <label for="metaAlbum">Album</label>
+              <input type="text" id="metaAlbum" placeholder="Album name">
+            </div>
+            <div class="setting">
+              <label for="metaGenre">Genre</label>
+              <input type="text" id="metaGenre" placeholder="e.g. Death Metal">
+            </div>
+            <div class="setting">
+              <label for="metaDate">Year</label>
+              <input type="text" id="metaDate" placeholder="e.g. 2026">
+            </div>
+            <div class="setting">
+              <label for="metaComment">Description</label>
+              <input type="text" id="metaComment" placeholder="Optional description">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden value holders -->
+    <span id="grainVal" style="display:none">10</span>
+    <span id="contrastVal" style="display:none">1.1</span>
+    <span id="brightnessVal" style="display:none">0.02</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+ffmpeg/
+icon_512.png
+*.ico
+package-lock.json
