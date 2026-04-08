@@ -17,6 +17,7 @@
       <button class="tab-btn active" data-tab="render">Create Video</button>
       <button class="tab-btn" data-tab="convert">Convert Audio</button>
       <button class="tab-btn" data-tab="upscale">Upscale Image</button>
+      <button class="tab-btn" data-tab="imgconvert">Convert Image</button>
     </div>
 
     <!-- TAB: Video Render -->
@@ -446,6 +447,64 @@
         <div class="result" id="upscaleResult" style="display:none"></div>
       </div>
     </div><!-- end tabUpscale -->
+
+    <!-- TAB: Image Convert -->
+    <div class="tab-content" id="tabImgConvert" data-tab="imgconvert" style="display:none">
+      <p class="subtitle">Convert images between formats</p>
+
+      <div class="convert-layout">
+        <!-- Source image -->
+        <div class="drop-zone convert-drop" id="imgConvertSourceZone" data-accept="visual">
+          <div class="drop-zone-icon">🖼️</div>
+          <div class="drop-zone-label">Drop your image here</div>
+          <div class="drop-zone-hint">PNG, JPG, WebP, BMP, TIFF, ICO</div>
+          <img class="preview-img" id="imgConvertThumb" style="display:none">
+          <input type="file" id="imgConvertSourceInput" accept="image/*" hidden>
+        </div>
+
+        <!-- Source info -->
+        <div class="convert-source-info" id="imgConvertSourceInfo" style="display:none">
+          <div class="recap-row"><span class="recap-label">File</span><span class="recap-value" id="imgConvertFileName">-</span></div>
+          <div class="recap-row"><span class="recap-label">Dimensions</span><span class="recap-value" id="imgConvertFileDims">-</span></div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="convert-arrow" id="imgConvertArrow" style="display:none">&#8595;</div>
+
+        <!-- Conversion settings -->
+        <div class="convert-settings" id="imgConvertSettings" style="display:none">
+          <div class="settings-grid">
+            <div class="setting">
+              <label for="imgConvertFormat">Output format</label>
+              <select id="imgConvertFormat">
+                <option value="png">PNG</option>
+                <option value="jpg">JPEG</option>
+                <option value="webp">WebP</option>
+                <option value="bmp">BMP</option>
+                <option value="tiff">TIFF</option>
+                <option value="ico">ICO</option>
+              </select>
+            </div>
+            <div class="setting" id="imgConvertQualitySetting">
+              <label for="imgConvertQuality">Quality <span id="imgConvertQualityVal">90</span>%</label>
+              <input type="range" id="imgConvertQuality" min="1" max="100" value="90">
+              <div class="slider-labels"><span>smallest</span><span>best</span></div>
+            </div>
+          </div>
+        </div>
+
+        <button id="imgConvertBtn" class="render-btn" disabled>Convert Image</button>
+
+        <div class="progress-area" id="imgConvertProgressArea" style="display:none">
+          <div class="progress-bar">
+            <div class="progress-fill" id="imgConvertProgressFill"></div>
+          </div>
+          <div class="progress-text" id="imgConvertProgressText">Converting...</div>
+        </div>
+
+        <div class="result" id="imgConvertResult" style="display:none"></div>
+      </div>
+    </div><!-- end tabImgConvert -->
 
     <!-- Hidden value holders -->
     <span id="grainVal" style="display:none">10</span>

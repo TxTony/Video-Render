@@ -10,6 +10,7 @@ const { resolveFFmpegPath, resolveFFprobePath, probeMediaMetadata, probeMediaDur
 const { render, cancelRender } = require('./lib/render');
 const { convertAudio, cancelConvert } = require('./lib/convert');
 const { upscaleImage, cancelUpscale, probeImageSize } = require('./lib/upscale');
+const { convertImage, cancelImgConvert } = require('./lib/imgconvert');
 
 /**
  * Register all IPC handlers for the renderer process.
@@ -112,6 +113,32 @@ function registerIpcHandlers(mainWindow, appDir) {
   ipcMain.handle('probe-image-size', async (event, filePath) => {
     if (!filePath || !fs.existsSync(filePath)) return { width: 0, height: 0 };
     return probeImageSize(ffprobePath, filePath);
+  });
+
+  ipcMain.handle('pick-imgconvert-output', async (event, format) => {
+    const extMap = {
+      png: 'png', jpg: 'jpg', jpeg: 'jpeg', webp: 'webp',
+      bmp: 'bmp', tiff: 'tiff', ico: 'ico'
+    };
+    const nameMap = {
+      png: 'PNG Image', jpg: 'JPEG Image', jpeg: 'JPEG Image', webp: 'WebP Image',
+      bmp: 'BMP Image', tiff: 'TIFF Image', ico: 'ICO Icon'
+    };
+    const ext = extMap[format] || format;
+    const result = await dialog.showSaveDialog(mainWindow, {
+      title: 'Save converted image as',
+      defaultPath: `output.${ext}`,
+      filters: [{ name: nameMap[format] || 'Image', extensions: [ext] }]
+    });
+    return result.canceled ? null : result.filePath;
+  });
+
+  ipcMain.handle('convert-image', async (event, opts) => {
+    return convertImage(opts, { ffmpegPath });
+  });
+
+  ipcMain.handle('cancel-imgconvert', () => {
+    cancelImgConvert();
   });
 
   return { sendToRenderer, cancelRender };

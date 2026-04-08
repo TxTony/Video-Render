@@ -17,6 +17,7 @@ import { buildRecap, updateRecap } from './modules/recap.js';
 import { setupRenderHandler } from './modules/render.js';
 import { setupConverter } from './modules/converter.js';
 import { setupUpscaler } from './modules/upscaler.js';
+import { setupImgConverter } from './modules/imgconverter.js';
 
 // --- DOM elements ---
 const els = {
@@ -322,6 +323,9 @@ setupConverter();
 
 // --- Image upscaler ---
 setupUpscaler();
+
+// --- Image converter ---
+setupImgConverter();
 
 // --- Init ---
 els.overlayPosition.value = 'custom';

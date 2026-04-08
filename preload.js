@@ -26,5 +26,10 @@ contextBridge.exposeInMainWorld('api', {
   pickUpscaleOutput: (ext) => ipcRenderer.invoke('pick-upscale-output', ext),
   upscaleImage: (opts) => ipcRenderer.invoke('upscale-image', opts),
   cancelUpscale: () => ipcRenderer.invoke('cancel-upscale'),
-  probeImageSize: (filePath) => ipcRenderer.invoke('probe-image-size', filePath)
+  probeImageSize: (filePath) => ipcRenderer.invoke('probe-image-size', filePath),
+
+  // Image converter
+  pickImgConvertOutput: (format) => ipcRenderer.invoke('pick-imgconvert-output', format),
+  convertImage: (opts) => ipcRenderer.invoke('convert-image', opts),
+  cancelImgConvert: () => ipcRenderer.invoke('cancel-imgconvert')
 });
