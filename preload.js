@@ -13,5 +13,12 @@ contextBridge.exposeInMainWorld('api', {
   probeMetadata: (filePath) => ipcRenderer.invoke('probe-metadata', filePath),
   onProgress: (callback) => ipcRenderer.on('render-progress', (_, data) => callback(data)),
   getFilePath: (file) => webUtils.getPathForFile(file),
-  onUpdateStatus: (callback) => ipcRenderer.on('update-status', (_, msg) => callback(msg))
+  onUpdateStatus: (callback) => ipcRenderer.on('update-status', (_, msg) => callback(msg)),
+
+  // Audio converter
+  pickConvertOutput: (format) => ipcRenderer.invoke('pick-convert-output', format),
+  convertAudio: (opts) => ipcRenderer.invoke('convert-audio', opts),
+  cancelConvert: () => ipcRenderer.invoke('cancel-convert'),
+  onConvertProgress: (callback) => ipcRenderer.on('convert-progress', (_, data) => callback(data)),
+  probeDuration: (filePath) => ipcRenderer.invoke('probe-duration', filePath)
 });

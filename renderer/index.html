@@ -10,8 +10,17 @@
 <body>
   <div class="app">
     <h1>VIDEORENDER</h1>
-    <p class="subtitle">Create a video from your image and song</p>
     <div class="update-bar" id="updateBar" style="display:none"></div>
+
+    <!-- Tab navigation -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="render">Create Video</button>
+      <button class="tab-btn" data-tab="convert">Convert Audio</button>
+    </div>
+
+    <!-- TAB: Video Render -->
+    <div class="tab-content active" id="tabRender" data-tab="render">
+    <p class="subtitle">Create a video from your image and song</p>
 
     <div class="layout">
       <!-- LEFT COLUMN: Essential -->
@@ -282,6 +291,88 @@
         </div>
       </div>
     </div>
+
+    </div><!-- end tabRender -->
+
+    <!-- TAB: Audio Convert -->
+    <div class="tab-content" id="tabConvert" data-tab="convert" style="display:none">
+      <p class="subtitle">Convert audio files between formats</p>
+
+      <div class="convert-layout">
+        <!-- Source file -->
+        <div class="drop-zone convert-drop" id="convertSourceZone" data-accept="audio">
+          <div class="drop-zone-icon">🎵</div>
+          <div class="drop-zone-label">Drop your audio file here</div>
+          <div class="drop-zone-hint">MP3, WAV, FLAC, OGG, AAC, WMA</div>
+          <div class="audio-name" id="convertSourceName" style="display:none"></div>
+          <input type="file" id="convertSourceInput" accept="audio/*" hidden>
+        </div>
+
+        <!-- Source info -->
+        <div class="convert-source-info" id="convertSourceInfo" style="display:none">
+          <div class="recap-row"><span class="recap-label">File</span><span class="recap-value" id="convertFileName">-</span></div>
+          <div class="recap-row"><span class="recap-label">Duration</span><span class="recap-value" id="convertFileDuration">-</span></div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="convert-arrow" id="convertArrow" style="display:none">&#8595;</div>
+
+        <!-- Conversion settings -->
+        <div class="convert-settings" id="convertSettings" style="display:none">
+          <div class="settings-grid">
+            <div class="setting">
+              <label for="convertFormat">Output format</label>
+              <select id="convertFormat">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV (lossless)</option>
+                <option value="flac">FLAC (lossless)</option>
+                <option value="ogg">OGG Vorbis</option>
+                <option value="aac">AAC (M4A)</option>
+                <option value="wma">WMA</option>
+              </select>
+            </div>
+            <div class="setting" id="convertBitrateSetting">
+              <label for="convertBitrate">Quality</label>
+              <select id="convertBitrate">
+                <option value="96">Low (96 kbps)</option>
+                <option value="128">Normal (128 kbps)</option>
+                <option value="192">High (192 kbps)</option>
+                <option value="256">Very high (256 kbps)</option>
+                <option value="320" selected>Maximum (320 kbps)</option>
+              </select>
+            </div>
+            <div class="setting">
+              <label for="convertSampleRate">Sample rate</label>
+              <select id="convertSampleRate">
+                <option value="0" selected>Keep original</option>
+                <option value="44100">44.1 kHz (CD)</option>
+                <option value="48000">48 kHz (standard)</option>
+                <option value="96000">96 kHz (hi-res)</option>
+              </select>
+            </div>
+            <div class="setting">
+              <label for="convertChannels">Channels</label>
+              <select id="convertChannels">
+                <option value="0" selected>Keep original</option>
+                <option value="1">Mono</option>
+                <option value="2">Stereo</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button id="convertBtn" class="render-btn" disabled>Convert Audio</button>
+
+        <div class="progress-area" id="convertProgressArea" style="display:none">
+          <div class="progress-bar">
+            <div class="progress-fill" id="convertProgressFill"></div>
+          </div>
+          <div class="progress-text" id="convertProgressText">Converting...</div>
+        </div>
+
+        <div class="result" id="convertResult" style="display:none"></div>
+      </div>
+    </div><!-- end tabConvert -->
 
     <!-- Hidden value holders -->
     <span id="grainVal" style="display:none">10</span>

@@ -15,6 +15,7 @@ import { probeAndFillMetadata, setupMetadataInputs } from './modules/metadata.js
 import { updateGuidance } from './modules/guidance.js';
 import { buildRecap, updateRecap } from './modules/recap.js';
 import { setupRenderHandler } from './modules/render.js';
+import { setupConverter } from './modules/converter.js';
 
 // --- DOM elements ---
 const els = {
@@ -299,6 +300,24 @@ window.api.onUpdateStatus((msg) => {
   bar.textContent = msg;
   bar.style.display = 'block';
 });
+
+// --- Tabs ---
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(t => {
+      t.style.display = 'none';
+      t.classList.remove('active');
+    });
+    const tab = document.querySelector(`.tab-content[data-tab="${btn.dataset.tab}"]`);
+    tab.style.display = 'block';
+    tab.classList.add('active');
+  });
+});
+
+// --- Audio converter ---
+setupConverter();
 
 // --- Init ---
 els.overlayPosition.value = 'custom';
