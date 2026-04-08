@@ -9,6 +9,7 @@ const fs = require('fs');
 const { resolveFFmpegPath, resolveFFprobePath, probeMediaMetadata, probeMediaDuration } = require('./lib/ffmpeg');
 const { render, cancelRender } = require('./lib/render');
 const { convertAudio, cancelConvert } = require('./lib/convert');
+const { upscaleImage, cancelUpscale, probeImageSize } = require('./lib/upscale');
 
 /**
  * Register all IPC handlers for the renderer process.
@@ -84,6 +85,33 @@ function registerIpcHandlers(mainWindow, appDir) {
   ipcMain.handle('probe-duration', async (event, filePath) => {
     if (!filePath || !fs.existsSync(filePath)) return 0;
     return probeMediaDuration(ffprobePath, filePath);
+  });
+
+  ipcMain.handle('pick-upscale-output', async (event, ext) => {
+    const result = await dialog.showSaveDialog(mainWindow, {
+      title: 'Save upscaled image as',
+      defaultPath: `upscaled.${ext || 'png'}`,
+      filters: [
+        { name: 'PNG Image', extensions: ['png'] },
+        { name: 'JPEG Image', extensions: ['jpg', 'jpeg'] },
+        { name: 'BMP Image', extensions: ['bmp'] },
+        { name: 'TIFF Image', extensions: ['tiff', 'tif'] },
+      ]
+    });
+    return result.canceled ? null : result.filePath;
+  });
+
+  ipcMain.handle('upscale-image', async (event, opts) => {
+    return upscaleImage(opts, { ffmpegPath, ffprobePath });
+  });
+
+  ipcMain.handle('cancel-upscale', () => {
+    cancelUpscale();
+  });
+
+  ipcMain.handle('probe-image-size', async (event, filePath) => {
+    if (!filePath || !fs.existsSync(filePath)) return { width: 0, height: 0 };
+    return probeImageSize(ffprobePath, filePath);
   });
 
   return { sendToRenderer, cancelRender };

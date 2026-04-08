@@ -774,3 +774,33 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 16px;
   margin-bottom: 4px;
 }
+
+/* Upscaler */
+.upscale-output-preview {
+  font-size: 12px;
+  color: #888;
+  padding: 8px 10px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.upscale-output-preview span {
+  color: #ff9944;
+  font-weight: 700;
+}
+
+.convert-settings input[type="number"] {
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #e0e0e0;
+  padding: 6px 8px;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+}
+
+.convert-settings input[type="number"]:focus {
+  border-color: #ff4444;
+}

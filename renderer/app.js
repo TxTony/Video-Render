@@ -16,6 +16,7 @@ import { updateGuidance } from './modules/guidance.js';
 import { buildRecap, updateRecap } from './modules/recap.js';
 import { setupRenderHandler } from './modules/render.js';
 import { setupConverter } from './modules/converter.js';
+import { setupUpscaler } from './modules/upscaler.js';
 
 // --- DOM elements ---
 const els = {
@@ -318,6 +319,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
 // --- Audio converter ---
 setupConverter();
+
+// --- Image upscaler ---
+setupUpscaler();
 
 // --- Init ---
 els.overlayPosition.value = 'custom';

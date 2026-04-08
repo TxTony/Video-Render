@@ -20,5 +20,11 @@ contextBridge.exposeInMainWorld('api', {
   convertAudio: (opts) => ipcRenderer.invoke('convert-audio', opts),
   cancelConvert: () => ipcRenderer.invoke('cancel-convert'),
   onConvertProgress: (callback) => ipcRenderer.on('convert-progress', (_, data) => callback(data)),
-  probeDuration: (filePath) => ipcRenderer.invoke('probe-duration', filePath)
+  probeDuration: (filePath) => ipcRenderer.invoke('probe-duration', filePath),
+
+  // Image upscaler
+  pickUpscaleOutput: (ext) => ipcRenderer.invoke('pick-upscale-output', ext),
+  upscaleImage: (opts) => ipcRenderer.invoke('upscale-image', opts),
+  cancelUpscale: () => ipcRenderer.invoke('cancel-upscale'),
+  probeImageSize: (filePath) => ipcRenderer.invoke('probe-image-size', filePath)
 });

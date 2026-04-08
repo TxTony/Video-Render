@@ -16,6 +16,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="render">Create Video</button>
       <button class="tab-btn" data-tab="convert">Convert Audio</button>
+      <button class="tab-btn" data-tab="upscale">Upscale Image</button>
     </div>
 
     <!-- TAB: Video Render -->
@@ -373,6 +374,78 @@
         <div class="result" id="convertResult" style="display:none"></div>
       </div>
     </div><!-- end tabConvert -->
+
+    <!-- TAB: Image Upscale -->
+    <div class="tab-content" id="tabUpscale" data-tab="upscale" style="display:none">
+      <p class="subtitle">Upscale your images to higher resolutions</p>
+
+      <div class="convert-layout">
+        <!-- Source image -->
+        <div class="drop-zone convert-drop" id="upscaleSourceZone" data-accept="visual">
+          <div class="drop-zone-icon">🖼️</div>
+          <div class="drop-zone-label">Drop your image here</div>
+          <div class="drop-zone-hint">PNG, JPG, BMP, TIFF, WebP</div>
+          <img class="preview-img" id="upscaleThumb" style="display:none">
+          <input type="file" id="upscaleSourceInput" accept="image/*" hidden>
+        </div>
+
+        <!-- Source info -->
+        <div class="convert-source-info" id="upscaleSourceInfo" style="display:none">
+          <div class="recap-row"><span class="recap-label">File</span><span class="recap-value" id="upscaleFileName">-</span></div>
+          <div class="recap-row"><span class="recap-label">Dimensions</span><span class="recap-value" id="upscaleFileDims">-</span></div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="convert-arrow" id="upscaleArrow" style="display:none">&#8595;</div>
+
+        <!-- Upscale settings -->
+        <div class="convert-settings" id="upscaleSettings" style="display:none">
+          <div class="settings-grid">
+            <div class="setting">
+              <label for="upscaleMode">Scale</label>
+              <select id="upscaleMode">
+                <option value="2x">2x</option>
+                <option value="4x">4x</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div class="setting">
+              <label for="upscaleAlgorithm">Algorithm</label>
+              <select id="upscaleAlgorithm">
+                <option value="lanczos" selected>Lanczos (sharpest)</option>
+                <option value="bicubic">Bicubic (smooth)</option>
+                <option value="bilinear">Bilinear (fast)</option>
+                <option value="spline">Spline (balanced)</option>
+              </select>
+            </div>
+          </div>
+          <div class="settings-grid upscale-custom-size" id="upscaleCustomSize" style="display:none; margin-top:12px">
+            <div class="setting">
+              <label for="upscaleWidth">Width (px)</label>
+              <input type="number" id="upscaleWidth" min="1" max="16384" placeholder="e.g. 3840">
+            </div>
+            <div class="setting">
+              <label for="upscaleHeight">Height (px)</label>
+              <input type="number" id="upscaleHeight" min="1" max="16384" placeholder="e.g. 2160">
+            </div>
+          </div>
+          <div class="upscale-output-preview" id="upscaleOutputPreview" style="display:none; margin-top:10px">
+            Output: <span id="upscaleOutputDims">-</span>
+          </div>
+        </div>
+
+        <button id="upscaleBtn" class="render-btn" disabled>Upscale Image</button>
+
+        <div class="progress-area" id="upscaleProgressArea" style="display:none">
+          <div class="progress-bar">
+            <div class="progress-fill" id="upscaleProgressFill"></div>
+          </div>
+          <div class="progress-text" id="upscaleProgressText">Upscaling...</div>
+        </div>
+
+        <div class="result" id="upscaleResult" style="display:none"></div>
+      </div>
+    </div><!-- end tabUpscale -->
 
     <!-- Hidden value holders -->
     <span id="grainVal" style="display:none">10</span>
