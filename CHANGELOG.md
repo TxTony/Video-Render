@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.2.0 — 2026-04-08
+
+### New Features
+- **Tab navigation** — switch between tools via a tab bar (Create Video, Convert Audio, Upscale Image, Convert Image)
+- **Audio converter** — convert audio files between MP3, WAV, FLAC, OGG, AAC, and WMA. Configurable bitrate, sample rate, and channel count. Bitrate selector auto-hides for lossless formats. Progress bar with cancel support.
+- **Image upscaler** — upscale images to 2x, 4x, or custom resolution. Choice of scaling algorithm: Lanczos, Bicubic, Bilinear, or Spline. Live output dimension preview. Exports to PNG, JPG, BMP, or TIFF.
+- **Image converter** — convert images between PNG, JPEG, WebP, BMP, TIFF, and ICO. Quality slider (1–100%) that auto-hides for lossless formats.
+
+### Code Quality
+- **New backend modules:**
+  - `lib/convert.js` — Audio conversion with codec/bitrate mapping
+  - `lib/upscale.js` — Image upscaling with dimension probing and algorithm selection
+  - `lib/imgconvert.js` — Image format conversion with per-format quality handling
+- **New frontend modules:**
+  - `modules/converter.js` — Audio converter tab UI
+  - `modules/upscaler.js` — Image upscaler tab UI
+  - `modules/imgconverter.js` — Image converter tab UI
+- All new lib modules are CLI-reusable (no Electron dependencies, dependency-injected paths)
+
+---
+
 ## v1.1.0 — 2026-04-02
 
 ### New Features
